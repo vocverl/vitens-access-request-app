@@ -32,6 +32,12 @@
             margin-bottom: 15px;
         }
 
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
         .settings-icon {
             background: rgba(255, 255, 255, 0.2);
             border: 2px solid rgba(255, 255, 255, 0.3);
@@ -60,6 +66,13 @@
             height: 60px;
             display: flex;
             align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .vitens-logo:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
 
         .vitens-logo img {
@@ -756,34 +769,40 @@
 
         /* Tools Navigation Menu */
         .tools-nav {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 10px 40px;
             display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
         }
 
         .tools-nav-link {
             color: white;
             text-decoration: none;
-            padding: 8px 16px;
+            padding: 8px 12px;
             border-radius: 4px;
-            font-size: 0.9em;
+            font-size: 0.85em;
             transition: all 0.3s;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.15);
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
+            white-space: nowrap;
         }
 
         .tools-nav-link:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.25);
             transform: translateY(-2px);
         }
 
         .tools-nav-link.active {
             background: #4aaedf;
             font-weight: 600;
+        }
+
+        /* Responsive: verberg tekst op kleinere schermen, alleen emoji's tonen */
+        @media (max-width: 768px) {
+            .tools-nav-link .nav-text {
+                display: none;
+            }
         }
 
         @media (max-width: 1024px) {
@@ -802,39 +821,33 @@
             .vitens-header {
                 padding: 15px 20px;
             }
-
-            .tools-nav {
-                padding: 10px 20px;
-            }
         }
     </style>
 </head>
 <body>
     <div class="vitens-header">
         <div class="vitens-logo-section">
-            <div class="vitens-logo">
+            <a href="index.html" class="vitens-logo" title="Terug naar home">
                 <img src="https://www.vitens.nl/-/media/Project/Vitens/VitensNl/vitens-logo.jpg" alt="Vitens Logo">
-            </div>
-            <div class="settings-icon" onclick="openSettings()" title="Instellingen">
-                ⚙️
+            </a>
+            <div class="header-right">
+                <!-- Tools Navigation -->
+                <nav class="tools-nav">
+                    <a href="test-grc-connection.html" class="tools-nav-link" title="GRC Connection Test">
+                        <span>🔧</span><span class="nav-text"> GRC Test</span>
+                    </a>
+                    <a href="inspect-excel.html" class="tools-nav-link" title="Excel Inspector">
+                        <span>📊</span><span class="nav-text"> Excel</span>
+                    </a>
+                </nav>
+                <div class="settings-icon" onclick="openSettings()" title="Instellingen">
+                    ⚙️
+                </div>
             </div>
         </div>
         <div class="header-title">Access Request Portal</div>
         <div class="header-subtitle">Vraag eenvoudig toegang aan tot applicaties en SAP rollen</div>
     </div>
-
-    <!-- Tools Navigation -->
-    <nav class="tools-nav">
-        <a href="index.html" class="tools-nav-link active">
-            <span>🏠</span> Access Request App
-        </a>
-        <a href="test-grc-connection.html" class="tools-nav-link">
-            <span>🔧</span> GRC Connection Test
-        </a>
-        <a href="inspect-excel.html" class="tools-nav-link">
-            <span>📊</span> Excel Inspector
-        </a>
-    </nav>
 
     <div class="container">
         <div class="main-content">
