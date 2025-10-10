@@ -1,6 +1,6 @@
-# Access Request App
+# Vitens Access Request App
 
-Een webapplicatie voor het beheren van toegangsverzoeken en GRC-integratie.
+Een webapplicatie voor het beheren van toegangsverzoeken en GRC-integratie voor Vitens.
 
 ## Beschrijving
 
@@ -28,3 +28,7 @@ Voor Excel inspectie: open `inspect-excel.html`
 ## Setup
 
 Repository gekoppeld met Claude Code voor AI-ondersteunde ontwikkeling.
+
+## GitHub Pages
+
+Live demo: https://vocverl.github.io/vitens-access-request-app/
