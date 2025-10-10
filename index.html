@@ -754,6 +754,38 @@
             border: 1px solid #f44336;
         }
 
+        /* Tools Navigation Menu */
+        .tools-nav {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 40px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .tools-nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tools-nav-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .tools-nav-link.active {
+            background: #4aaedf;
+            font-weight: 600;
+        }
+
         @media (max-width: 1024px) {
             .main-content {
                 grid-template-columns: 1fr;
@@ -769,6 +801,10 @@
 
             .vitens-header {
                 padding: 15px 20px;
+            }
+
+            .tools-nav {
+                padding: 10px 20px;
             }
         }
     </style>
@@ -786,6 +822,19 @@
         <div class="header-title">Access Request Portal</div>
         <div class="header-subtitle">Vraag eenvoudig toegang aan tot applicaties en SAP rollen</div>
     </div>
+
+    <!-- Tools Navigation -->
+    <nav class="tools-nav">
+        <a href="index.html" class="tools-nav-link active">
+            <span>🏠</span> Access Request App
+        </a>
+        <a href="test-grc-connection.html" class="tools-nav-link">
+            <span>🔧</span> GRC Connection Test
+        </a>
+        <a href="inspect-excel.html" class="tools-nav-link">
+            <span>📊</span> Excel Inspector
+        </a>
+    </nav>
 
     <div class="container">
         <div class="main-content">
