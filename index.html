@@ -368,10 +368,16 @@
             display: flex;
             gap: 10px;
             margin-bottom: 30px;
+            position: relative;
+        }
+
+        .search-input-wrapper {
+            flex: 1;
+            position: relative;
         }
 
         .search-input {
-            flex: 1;
+            width: 100%;
             padding: 12px 16px;
             border: 2px solid #ddd;
             border-radius: 4px;
@@ -382,6 +388,82 @@
         .search-input:focus {
             outline: none;
             border-color: #4aaedf;
+        }
+
+        /* Autocomplete dropdown */
+        .autocomplete-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid #4aaedf;
+            border-top: none;
+            border-radius: 0 0 4px 4px;
+            max-height: 400px;
+            overflow-y: auto;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            display: none;
+        }
+
+        .autocomplete-dropdown.active {
+            display: block;
+        }
+
+        .autocomplete-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.2s;
+        }
+
+        .autocomplete-item:last-child {
+            border-bottom: none;
+        }
+
+        .autocomplete-item:hover,
+        .autocomplete-item.selected {
+            background: #f0f4ff;
+        }
+
+        .autocomplete-item-name {
+            font-weight: 600;
+            color: #2c3c8a;
+            margin-bottom: 4px;
+            font-size: 0.95em;
+        }
+
+        .autocomplete-item-description {
+            color: #666;
+            font-size: 0.85em;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .autocomplete-item-type {
+            display: inline-block;
+            padding: 2px 8px;
+            background: #4aaedf;
+            color: white;
+            border-radius: 3px;
+            font-size: 0.75em;
+            margin-top: 4px;
+        }
+
+        .autocomplete-no-results {
+            padding: 16px;
+            text-align: center;
+            color: #999;
+            font-size: 0.9em;
+        }
+
+        .autocomplete-loading {
+            padding: 16px;
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
         }
 
         .btn-primary {
@@ -984,13 +1066,16 @@
                 <h2 class="section-title">Zoeken naar toegang</h2>
 
                 <div class="search-box">
-                    <input
-                        type="text"
-                        class="search-input"
-                        id="searchInput"
-                        placeholder="Zoek naar Visio, SAP rollen of applicaties..."
-                        autocomplete="off"
-                    >
+                    <div class="search-input-wrapper">
+                        <input
+                            type="text"
+                            class="search-input"
+                            id="searchInput"
+                            placeholder="Zoek naar Visio, SAP rollen of applicaties..."
+                            autocomplete="off"
+                        >
+                        <div class="autocomplete-dropdown" id="autocompleteDropdown"></div>
+                    </div>
                     <button class="btn-primary" onclick="performSearch()">Zoeken</button>
                 </div>
 
@@ -1308,6 +1393,9 @@
             document.getElementById('resultsContainer').innerHTML =
                 '<div class="no-results">Voer een zoekterm in om te beginnen met zoeken</div>';
             document.getElementById('searchInput').value = '';
+
+            // Clear autocomplete
+            hideAutocomplete();
 
             console.log(`Switched to ${mode} mode`);
         }
@@ -2447,12 +2535,200 @@
         }
 
         // ============================================
+        // AUTOCOMPLETE FUNCTIONALITEIT
+        // ============================================
+
+        let autocompleteResults = [];
+        let selectedAutocompleteIndex = -1;
+        let autocompleteDebounceTimer = null;
+
+        /**
+         * Toon autocomplete suggesties
+         */
+        function showAutocompleteSuggestions(searchTerm) {
+            const dropdown = document.getElementById('autocompleteDropdown');
+
+            if (!searchTerm || searchTerm.trim().length < 2) {
+                hideAutocomplete();
+                return;
+            }
+
+            // Haal data op basis van huidige mode
+            let dataSource = [];
+            switch(currentMode) {
+                case 'demo':
+                    dataSource = localAvailableAccess;
+                    break;
+                case 'excel':
+                    if (excelData.length === 0) {
+                        hideAutocomplete();
+                        return;
+                    }
+                    dataSource = excelData;
+                    break;
+                case 'online':
+                    // Voor online mode: gebruik lokale cache of vorige resultaten
+                    // In productie zou dit async zijn met live GRC data
+                    dataSource = searchResults.length > 0 ? searchResults : localAvailableAccess;
+                    break;
+            }
+
+            // Gebruik fuzzy search voor autocomplete suggesties
+            autocompleteResults = fuzzySearch(searchTerm, dataSource).slice(0, 8); // Max 8 suggesties
+            selectedAutocompleteIndex = -1;
+
+            if (autocompleteResults.length === 0) {
+                dropdown.innerHTML = '<div class="autocomplete-no-results">Geen suggesties gevonden</div>';
+                dropdown.classList.add('active');
+                return;
+            }
+
+            // Render suggesties
+            dropdown.innerHTML = autocompleteResults.map((item, index) => `
+                <div class="autocomplete-item" data-index="${index}" onclick="selectAutocompleteSuggestion(${index})">
+                    <div class="autocomplete-item-name">${highlightMatch(item.name, searchTerm)}</div>
+                    <div class="autocomplete-item-description">${item.description}</div>
+                    <span class="autocomplete-item-type">${item.type}</span>
+                </div>
+            `).join('');
+
+            dropdown.classList.add('active');
+        }
+
+        /**
+         * Highlight matching text in autocomplete suggestie
+         */
+        function highlightMatch(text, searchTerm) {
+            if (!searchTerm) return text;
+
+            const regex = new RegExp(`(${escapeRegex(searchTerm)})`, 'gi');
+            return text.replace(regex, '<strong>$1</strong>');
+        }
+
+        /**
+         * Escape special regex characters
+         */
+        function escapeRegex(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        /**
+         * Verberg autocomplete dropdown
+         */
+        function hideAutocomplete() {
+            const dropdown = document.getElementById('autocompleteDropdown');
+            dropdown.classList.remove('active');
+            autocompleteResults = [];
+            selectedAutocompleteIndex = -1;
+        }
+
+        /**
+         * Selecteer een autocomplete suggestie
+         */
+        function selectAutocompleteSuggestion(index) {
+            if (index >= 0 && index < autocompleteResults.length) {
+                const selectedItem = autocompleteResults[index];
+                document.getElementById('searchInput').value = selectedItem.name;
+                hideAutocomplete();
+
+                // Automatisch zoeken na selectie
+                performSearch();
+            }
+        }
+
+        /**
+         * Navigeer door autocomplete suggesties met toetsenbord
+         */
+        function navigateAutocomplete(direction) {
+            const dropdown = document.getElementById('autocompleteDropdown');
+            if (!dropdown.classList.contains('active') || autocompleteResults.length === 0) return;
+
+            // Remove previous selection
+            const items = dropdown.querySelectorAll('.autocomplete-item');
+            if (selectedAutocompleteIndex >= 0 && selectedAutocompleteIndex < items.length) {
+                items[selectedAutocompleteIndex].classList.remove('selected');
+            }
+
+            // Update index
+            if (direction === 'down') {
+                selectedAutocompleteIndex = (selectedAutocompleteIndex + 1) % autocompleteResults.length;
+            } else if (direction === 'up') {
+                selectedAutocompleteIndex = selectedAutocompleteIndex <= 0 ?
+                    autocompleteResults.length - 1 :
+                    selectedAutocompleteIndex - 1;
+            }
+
+            // Add new selection
+            if (selectedAutocompleteIndex >= 0 && selectedAutocompleteIndex < items.length) {
+                items[selectedAutocompleteIndex].classList.add('selected');
+
+                // Scroll into view if needed
+                items[selectedAutocompleteIndex].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+            }
+        }
+
+        /**
+         * Gebruik geselecteerde autocomplete suggestie
+         */
+        function useSelectedAutocompleteSuggestion() {
+            if (selectedAutocompleteIndex >= 0 && selectedAutocompleteIndex < autocompleteResults.length) {
+                selectAutocompleteSuggestion(selectedAutocompleteIndex);
+                return true;
+            }
+            return false;
+        }
+
+        /**
+         * Handle input in search field met debouncing
+         */
+        function handleSearchInput(event) {
+            const searchTerm = event.target.value.trim();
+
+            // Clear previous timer
+            if (autocompleteDebounceTimer) {
+                clearTimeout(autocompleteDebounceTimer);
+            }
+
+            // Debounce: wait 300ms after user stops typing
+            autocompleteDebounceTimer = setTimeout(() => {
+                showAutocompleteSuggestions(searchTerm);
+            }, 300);
+        }
+
+        // ============================================
         // EVENT LISTENERS
         // ============================================
 
+        // Search input met autocomplete
+        document.getElementById('searchInput').addEventListener('input', handleSearchInput);
+
+        // Keyboard navigation
+        document.getElementById('searchInput').addEventListener('keydown', function(e) {
+            const dropdown = document.getElementById('autocompleteDropdown');
+            const isDropdownActive = dropdown.classList.contains('active');
+
+            if (e.key === 'ArrowDown' && isDropdownActive) {
+                e.preventDefault();
+                navigateAutocomplete('down');
+            } else if (e.key === 'ArrowUp' && isDropdownActive) {
+                e.preventDefault();
+                navigateAutocomplete('up');
+            } else if (e.key === 'Enter') {
+                if (isDropdownActive && useSelectedAutocompleteSuggestion()) {
+                    e.preventDefault();
+                } else {
+                    performSearch();
+                }
+            } else if (e.key === 'Escape') {
+                hideAutocomplete();
+            }
+        });
+
+        // Legacy Enter key support
         document.getElementById('searchInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
-                performSearch();
+                // Handled by keydown listener above
+                e.preventDefault();
             }
         });
 
@@ -2463,6 +2739,16 @@
         document.getElementById('settingsModal').addEventListener('click', function(e) {
             if (e.target === this) {
                 closeSettings();
+            }
+        });
+
+        // Close autocomplete when clicking outside
+        document.addEventListener('click', function(e) {
+            const searchInput = document.getElementById('searchInput');
+            const autocompleteDropdown = document.getElementById('autocompleteDropdown');
+
+            if (!searchInput.contains(e.target) && !autocompleteDropdown.contains(e.target)) {
+                hideAutocomplete();
             }
         });
 
