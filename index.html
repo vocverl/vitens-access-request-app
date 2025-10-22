@@ -239,6 +239,100 @@
             font-weight: 600;
         }
 
+        /* User Info Section */
+        .user-info-section {
+            background: #f0f4ff;
+            padding: 15px;
+            border-radius: 4px;
+            border: 2px solid #4aaedf;
+            margin-bottom: 20px;
+        }
+
+        .user-info-title {
+            font-size: 1.1em;
+            color: #2c3c8a;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .user-form-row {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .user-form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .user-form-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 0.85em;
+        }
+
+        .user-form-input,
+        .user-form-textarea {
+            padding: 8px 10px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+            transition: border-color 0.3s;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .user-form-input:focus,
+        .user-form-textarea:focus {
+            outline: none;
+            border-color: #4aaedf;
+        }
+
+        .user-form-input:disabled {
+            background: #f5f5f5;
+            color: #666;
+        }
+
+        .user-form-textarea {
+            min-height: 60px;
+            resize: vertical;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+
+        .radio-option input[type="radio"] {
+            cursor: pointer;
+        }
+
+        .role-owner {
+            font-size: 0.85em;
+            color: #666;
+            margin-top: 6px;
+            margin-bottom: 12px;
+        }
+
+        .role-owner-label {
+            font-weight: 600;
+            color: #2c3c8a;
+        }
+
         .search-box {
             display: flex;
             gap: 10px;
@@ -937,6 +1031,61 @@
                     <div id="excelStatus" class="excel-info" style="margin-top: 8px; display: none;"></div>
                 </div>
 
+                <!-- Gebruikersinformatie Sectie -->
+                <div class="user-info-section">
+                    <h3 class="user-info-title">Gebruikersinformatie</h3>
+
+                    <div class="user-form-group full-width" style="margin-bottom: 15px;">
+                        <label class="user-form-label">Aanvraag voor:</label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="requestFor" value="self" checked onchange="toggleUserFields()">
+                                <span>Mezelf</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="requestFor" value="other" onchange="toggleUserFields()">
+                                <span>Andere</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="user-form-group" style="margin-bottom: 10px;">
+                        <label class="user-form-label" for="userFirstName">Voornaam</label>
+                        <input type="text" id="userFirstName" class="user-form-input" placeholder="Voornaam">
+                    </div>
+                    <div class="user-form-group" style="margin-bottom: 10px;">
+                        <label class="user-form-label" for="userLastName">Achternaam</label>
+                        <input type="text" id="userLastName" class="user-form-input" placeholder="Achternaam">
+                    </div>
+
+                    <div class="user-form-group" style="margin-bottom: 10px;">
+                        <label class="user-form-label" for="userId">Gebruikers-ID</label>
+                        <input type="text" id="userId" class="user-form-input" placeholder="Gebruikers-ID">
+                    </div>
+                    <div class="user-form-group" style="margin-bottom: 10px;">
+                        <label class="user-form-label" for="userEmail">E-mail</label>
+                        <input type="email" id="userEmail" class="user-form-input" placeholder="gebruiker@vitens.nl">
+                    </div>
+
+                    <div class="user-form-group" style="margin-bottom: 10px;">
+                        <label class="user-form-label" for="userManager">Manager</label>
+                        <input type="text" id="userManager" class="user-form-input" placeholder="Manager">
+                    </div>
+                    <div class="user-form-group" style="margin-bottom: 10px;">
+                        <label class="user-form-label" for="userDepartment">Afdeling</label>
+                        <input type="text" id="userDepartment" class="user-form-input" placeholder="Afdeling">
+                    </div>
+
+                    <div class="user-form-group full-width" style="margin-bottom: 0;">
+                        <label class="user-form-label" for="businessJustification">Zakelijke rechtvaardiging</label>
+                        <textarea
+                            id="businessJustification"
+                            class="user-form-textarea"
+                            placeholder="Geef een gedetailleerde reden..."
+                        ></textarea>
+                    </div>
+                </div>
+
                 <!-- Winkelwagen sectie (als los blok) -->
                 <div class="cart-block">
                     <h2 class="cart-title">
@@ -1450,56 +1599,64 @@
                 name: "Microsoft Visio Professional",
                 description: "Diagrammen en flowcharts maken",
                 type: "Applicatie",
-                category: "visio"
+                category: "visio",
+                owner: "IT Support Team"
             },
             {
                 id: 2,
                 name: "Microsoft Visio Standard",
                 description: "Basis diagrammen en tekeningen",
                 type: "Applicatie",
-                category: "visio"
+                category: "visio",
+                owner: "IT Support Team"
             },
             {
                 id: 3,
                 name: "SAP_P2P_BUYER",
                 description: "Purchase-to-Pay: Inkoper rechten voor het aanmaken van inkooporders",
                 type: "SAP Rol",
-                category: "p2p"
+                category: "p2p",
+                owner: "Procurement Manager"
             },
             {
                 id: 4,
                 name: "SAP_P2P_APPROVER",
                 description: "Purchase-to-Pay: Goedkeuren van inkooporders en facturen",
                 type: "SAP Rol",
-                category: "p2p"
+                category: "p2p",
+                owner: "Finance Manager"
             },
             {
                 id: 5,
                 name: "SAP_P2P_REQUESTER",
                 description: "Purchase-to-Pay: Aanmaken van inkoopaanvragen",
                 type: "SAP Rol",
-                category: "p2p"
+                category: "p2p",
+                owner: "Procurement Manager"
             },
             {
                 id: 6,
                 name: "SAP_P2P_RECEIVER",
                 description: "Purchase-to-Pay: Goederenontvanst registreren",
                 type: "SAP Rol",
-                category: "p2p"
+                category: "p2p",
+                owner: "Logistics Manager"
             },
             {
                 id: 7,
                 name: "SAP_P2P_VENDOR_MANAGER",
                 description: "Purchase-to-Pay: Leveranciersbeheer en stamgegevens",
                 type: "SAP Rol",
-                category: "p2p"
+                category: "p2p",
+                owner: "Procurement Manager"
             },
             {
                 id: 8,
                 name: "SAP_P2P_INVOICE_PROCESSOR",
                 description: "Purchase-to-Pay: Factuurverwerking en controle",
                 type: "SAP Rol",
-                category: "p2p"
+                category: "p2p",
+                owner: "Finance Manager"
             }
         ];
 
@@ -1581,7 +1738,7 @@
                 const xmlResponse = await callGrcSoapApi('searchRoles', soapBody);
 
                 // Parse response en extract rol informatie
-                // RoleName, RoleDesc, System, RoleType
+                // RoleName, RoleDesc, System, RoleType, RoleOwner
                 const roles = [];
                 const roleNodes = xmlResponse.getElementsByTagName('ROLE');
 
@@ -1592,7 +1749,10 @@
                         name: roleNode.getElementsByTagName('ROLE_NAME')[0]?.textContent,
                         description: roleNode.getElementsByTagName('ROLE_DESC')[0]?.textContent,
                         type: roleNode.getElementsByTagName('ROLE_TYPE')[0]?.textContent,
-                        system: roleNode.getElementsByTagName('SYSTEM')[0]?.textContent
+                        system: roleNode.getElementsByTagName('SYSTEM')[0]?.textContent,
+                        owner: roleNode.getElementsByTagName('ROLE_OWNER')[0]?.textContent ||
+                               roleNode.getElementsByTagName('OWNER')[0]?.textContent ||
+                               'Niet beschikbaar'
                     });
                 }
 
@@ -1673,9 +1833,82 @@
             // Voor nu return placeholder
             return {
                 userId: 'current.user',
+                firstName: 'Huidige',
+                lastName: 'Gebruiker',
                 displayName: 'Huidige Gebruiker',
                 email: 'user@vitens.nl',
-                department: 'IT'
+                department: 'IT',
+                manager: 'Manager Naam'
+            };
+        }
+
+        // ============================================
+        // USER INFORMATION MANAGEMENT
+        // ============================================
+
+        /**
+         * Toggle user fields gebaseerd op "Voor mezelf" of "Andere gebruiker"
+         */
+        function toggleUserFields() {
+            const requestFor = document.querySelector('input[name="requestFor"]:checked').value;
+
+            if (requestFor === 'self') {
+                // Vul automatisch in met huidige gebruiker
+                populateCurrentUserInfo();
+                // Disable fields voor eigen aanvraag
+                document.getElementById('userFirstName').disabled = true;
+                document.getElementById('userLastName').disabled = true;
+                document.getElementById('userId').disabled = true;
+                document.getElementById('userEmail').disabled = true;
+            } else {
+                // Enable fields voor andere gebruiker
+                document.getElementById('userFirstName').disabled = false;
+                document.getElementById('userLastName').disabled = false;
+                document.getElementById('userId').disabled = false;
+                document.getElementById('userEmail').disabled = false;
+                // Clear fields
+                clearUserFields();
+            }
+        }
+
+        /**
+         * Vul gebruikersvelden in met huidige gebruiker info
+         */
+        function populateCurrentUserInfo() {
+            const currentUser = getCurrentUser();
+            document.getElementById('userFirstName').value = currentUser.firstName || '';
+            document.getElementById('userLastName').value = currentUser.lastName || '';
+            document.getElementById('userId').value = currentUser.userId || '';
+            document.getElementById('userEmail').value = currentUser.email || '';
+            document.getElementById('userManager').value = currentUser.manager || '';
+            document.getElementById('userDepartment').value = currentUser.department || '';
+        }
+
+        /**
+         * Clear user fields
+         */
+        function clearUserFields() {
+            document.getElementById('userFirstName').value = '';
+            document.getElementById('userLastName').value = '';
+            document.getElementById('userId').value = '';
+            document.getElementById('userEmail').value = '';
+            document.getElementById('userManager').value = '';
+            document.getElementById('userDepartment').value = '';
+        }
+
+        /**
+         * Haal gebruikersinformatie op uit formulier
+         */
+        function getUserInfoFromForm() {
+            return {
+                requestFor: document.querySelector('input[name="requestFor"]:checked').value,
+                firstName: document.getElementById('userFirstName').value.trim(),
+                lastName: document.getElementById('userLastName').value.trim(),
+                userId: document.getElementById('userId').value.trim(),
+                email: document.getElementById('userEmail').value.trim(),
+                manager: document.getElementById('userManager').value.trim(),
+                department: document.getElementById('userDepartment').value.trim(),
+                businessJustification: document.getElementById('businessJustification').value.trim()
             };
         }
 
@@ -1847,11 +2080,14 @@
 
             resultsContainer.innerHTML = searchResults.map(item => {
                 const isInCart = cart.some(cartItem => cartItem.id === item.id);
+                const ownerInfo = item.owner ? `<div class="role-owner"><span class="role-owner-label">Rol eigenaar:</span> ${item.owner}</div>` : '';
+
                 return `
                     <div class="result-item">
                         <div class="result-info">
                             <div class="result-name">${item.name}</div>
                             <div class="result-description">${item.description}</div>
+                            ${ownerInfo}
                             <span class="result-type">${item.type}</span>
                         </div>
                         <button
@@ -2193,6 +2429,9 @@
                 const settings = JSON.parse(savedSettings);
                 applySettings(settings);
             }
+
+            // Populate current user info on load
+            populateCurrentUserInfo();
         });
     </script>
 </body>
