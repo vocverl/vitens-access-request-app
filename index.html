@@ -100,6 +100,7 @@
             background: #f0f4ff;
             border-radius: 6px;
             border: 2px solid #4aaedf;
+            margin-bottom: 20px;
         }
 
         .mode-switch-label {
@@ -253,6 +254,36 @@
             color: #2c3c8a;
             margin-bottom: 12px;
             font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            user-select: none;
+        }
+
+        .user-info-title:hover {
+            color: #4aaedf;
+        }
+
+        .collapse-icon {
+            font-size: 0.9em;
+            transition: transform 0.3s;
+        }
+
+        .collapse-icon.collapsed {
+            transform: rotate(-90deg);
+        }
+
+        .user-info-content {
+            max-height: 1000px;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+            opacity: 1;
+        }
+
+        .user-info-content.collapsed {
+            max-height: 0;
+            opacity: 0;
         }
 
         .user-form-row {
@@ -1033,9 +1064,13 @@
 
                 <!-- Gebruikersinformatie Sectie -->
                 <div class="user-info-section">
-                    <h3 class="user-info-title">Gebruikersinformatie</h3>
+                    <h3 class="user-info-title" onclick="toggleUserInfoSection()">
+                        <span>Gebruikersinformatie</span>
+                        <span class="collapse-icon">▼</span>
+                    </h3>
 
-                    <div class="user-form-group full-width" style="margin-bottom: 15px;">
+                    <div class="user-info-content" id="userInfoContent">
+                        <div class="user-form-group full-width" style="margin-bottom: 15px;">
                         <label class="user-form-label">Aanvraag voor:</label>
                         <div class="radio-group">
                             <label class="radio-option">
@@ -1083,6 +1118,7 @@
                             class="user-form-textarea"
                             placeholder="Geef een gedetailleerde reden..."
                         ></textarea>
+                    </div>
                     </div>
                 </div>
 
@@ -1910,6 +1946,17 @@
                 department: document.getElementById('userDepartment').value.trim(),
                 businessJustification: document.getElementById('businessJustification').value.trim()
             };
+        }
+
+        /**
+         * Toggle gebruikersinformatie sectie in/uitklappen
+         */
+        function toggleUserInfoSection() {
+            const content = document.getElementById('userInfoContent');
+            const icon = document.querySelector('.collapse-icon');
+
+            content.classList.toggle('collapsed');
+            icon.classList.toggle('collapsed');
         }
 
         // ============================================
