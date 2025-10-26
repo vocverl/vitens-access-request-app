@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Access Request Portal - Vitens</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <style>
         * {
             margin: 0;
@@ -30,6 +31,12 @@
             justify-content: space-between;
             gap: 20px;
             margin-bottom: 15px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
 
         .settings-icon {
@@ -60,6 +67,13 @@
             height: 60px;
             display: flex;
             align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .vitens-logo:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
 
         .vitens-logo img {
@@ -86,6 +100,7 @@
             background: #f0f4ff;
             border-radius: 6px;
             border: 2px solid #4aaedf;
+            margin-bottom: 20px;
         }
 
         .mode-switch-label {
@@ -225,14 +240,144 @@
             font-weight: 600;
         }
 
+        /* User Info Section */
+        .user-info-section {
+            background: #f0f4ff;
+            padding: 15px;
+            border-radius: 4px;
+            border: 2px solid #4aaedf;
+            margin-bottom: 20px;
+        }
+
+        .user-info-title {
+            font-size: 1.1em;
+            color: #2c3c8a;
+            margin-bottom: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            user-select: none;
+        }
+
+        .user-info-title:hover {
+            color: #4aaedf;
+        }
+
+        .collapse-icon {
+            font-size: 0.9em;
+            transition: transform 0.3s;
+        }
+
+        .collapse-icon.collapsed {
+            transform: rotate(-90deg);
+        }
+
+        .user-info-content {
+            max-height: 1000px;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+            opacity: 1;
+        }
+
+        .user-info-content.collapsed {
+            max-height: 0;
+            opacity: 0;
+        }
+
+        .user-form-row {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .user-form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .user-form-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 0.85em;
+        }
+
+        .user-form-input,
+        .user-form-textarea {
+            padding: 8px 10px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+            transition: border-color 0.3s;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .user-form-input:focus,
+        .user-form-textarea:focus {
+            outline: none;
+            border-color: #4aaedf;
+        }
+
+        .user-form-input:disabled {
+            background: #f5f5f5;
+            color: #666;
+        }
+
+        .user-form-textarea {
+            min-height: 60px;
+            resize: vertical;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+
+        .radio-option input[type="radio"] {
+            cursor: pointer;
+        }
+
+        .role-owner {
+            font-size: 0.85em;
+            color: #666;
+            margin-top: 6px;
+            margin-bottom: 12px;
+        }
+
+        .role-owner-label {
+            font-weight: 600;
+            color: #2c3c8a;
+        }
+
         .search-box {
             display: flex;
             gap: 10px;
             margin-bottom: 30px;
+            position: relative;
+        }
+
+        .search-input-wrapper {
+            flex: 1;
+            position: relative;
         }
 
         .search-input {
-            flex: 1;
+            width: 100%;
             padding: 12px 16px;
             border: 2px solid #ddd;
             border-radius: 4px;
@@ -243,6 +388,82 @@
         .search-input:focus {
             outline: none;
             border-color: #4aaedf;
+        }
+
+        /* Autocomplete dropdown */
+        .autocomplete-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid #4aaedf;
+            border-top: none;
+            border-radius: 0 0 4px 4px;
+            max-height: 400px;
+            overflow-y: auto;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            display: none;
+        }
+
+        .autocomplete-dropdown.active {
+            display: block;
+        }
+
+        .autocomplete-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.2s;
+        }
+
+        .autocomplete-item:last-child {
+            border-bottom: none;
+        }
+
+        .autocomplete-item:hover,
+        .autocomplete-item.selected {
+            background: #f0f4ff;
+        }
+
+        .autocomplete-item-name {
+            font-weight: 600;
+            color: #2c3c8a;
+            margin-bottom: 4px;
+            font-size: 0.95em;
+        }
+
+        .autocomplete-item-description {
+            color: #666;
+            font-size: 0.85em;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .autocomplete-item-type {
+            display: inline-block;
+            padding: 2px 8px;
+            background: #4aaedf;
+            color: white;
+            border-radius: 3px;
+            font-size: 0.75em;
+            margin-top: 4px;
+        }
+
+        .autocomplete-no-results {
+            padding: 16px;
+            text-align: center;
+            color: #999;
+            font-size: 0.9em;
+        }
+
+        .autocomplete-loading {
+            padding: 16px;
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
         }
 
         .btn-primary {
@@ -754,6 +975,44 @@
             border: 1px solid #f44336;
         }
 
+        /* Tools Navigation Menu */
+        .tools-nav {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .tools-nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+        }
+
+        .tools-nav-link:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .tools-nav-link.active {
+            background: #4aaedf;
+            font-weight: 600;
+        }
+
+        /* Responsive: verberg tekst op kleinere schermen, alleen emoji's tonen */
+        @media (max-width: 768px) {
+            .tools-nav-link .nav-text {
+                display: none;
+            }
+        }
+
         @media (max-width: 1024px) {
             .main-content {
                 grid-template-columns: 1fr;
@@ -776,11 +1035,22 @@
 <body>
     <div class="vitens-header">
         <div class="vitens-logo-section">
-            <div class="vitens-logo">
+            <a href="index.html" class="vitens-logo" title="Terug naar home">
                 <img src="https://www.vitens.nl/-/media/Project/Vitens/VitensNl/vitens-logo.jpg" alt="Vitens Logo">
-            </div>
-            <div class="settings-icon" onclick="openSettings()" title="Instellingen">
-                ⚙️
+            </a>
+            <div class="header-right">
+                <!-- Tools Navigation -->
+                <nav class="tools-nav">
+                    <a href="test-grc-connection.html" class="tools-nav-link" title="GRC Connection Test">
+                        <span>🔧</span><span class="nav-text"> GRC Test</span>
+                    </a>
+                    <a href="inspect-excel.html" class="tools-nav-link" title="Excel Inspector">
+                        <span>📊</span><span class="nav-text"> Excel</span>
+                    </a>
+                </nav>
+                <div class="settings-icon" onclick="openSettings()" title="Instellingen">
+                    ⚙️
+                </div>
             </div>
         </div>
         <div class="header-title">Access Request Portal</div>
@@ -796,13 +1066,16 @@
                 <h2 class="section-title">Zoeken naar toegang</h2>
 
                 <div class="search-box">
-                    <input
-                        type="text"
-                        class="search-input"
-                        id="searchInput"
-                        placeholder="Zoek naar Visio, SAP rollen of applicaties..."
-                        autocomplete="off"
-                    >
+                    <div class="search-input-wrapper">
+                        <input
+                            type="text"
+                            class="search-input"
+                            id="searchInput"
+                            placeholder="Zoek naar Visio, SAP rollen of applicaties..."
+                            autocomplete="off"
+                        >
+                        <div class="autocomplete-dropdown" id="autocompleteDropdown"></div>
+                    </div>
                     <button class="btn-primary" onclick="performSearch()">Zoeken</button>
                 </div>
 
@@ -872,6 +1145,66 @@
                         📁 Upload voor 8000+ rollen
                     </div>
                     <div id="excelStatus" class="excel-info" style="margin-top: 8px; display: none;"></div>
+                </div>
+
+                <!-- Gebruikersinformatie Sectie -->
+                <div class="user-info-section">
+                    <h3 class="user-info-title" onclick="toggleUserInfoSection()">
+                        <span>Gebruikersinformatie</span>
+                        <span class="collapse-icon">▼</span>
+                    </h3>
+
+                    <div class="user-info-content" id="userInfoContent">
+                        <div class="user-form-group full-width" style="margin-bottom: 15px;">
+                        <label class="user-form-label">Aanvraag voor:</label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="requestFor" value="self" checked onchange="toggleUserFields()">
+                                <span>Mezelf</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="requestFor" value="other" onchange="toggleUserFields()">
+                                <span>Andere</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="user-form-group" style="margin-bottom: 10px;">
+                        <label class="user-form-label" for="userFirstName">Voornaam</label>
+                        <input type="text" id="userFirstName" class="user-form-input" placeholder="Voornaam">
+                    </div>
+                    <div class="user-form-group" style="margin-bottom: 10px;">
+                        <label class="user-form-label" for="userLastName">Achternaam</label>
+                        <input type="text" id="userLastName" class="user-form-input" placeholder="Achternaam">
+                    </div>
+
+                    <div class="user-form-group" style="margin-bottom: 10px;">
+                        <label class="user-form-label" for="userId">Gebruikers-ID</label>
+                        <input type="text" id="userId" class="user-form-input" placeholder="Gebruikers-ID">
+                    </div>
+                    <div class="user-form-group" style="margin-bottom: 10px;">
+                        <label class="user-form-label" for="userEmail">E-mail</label>
+                        <input type="email" id="userEmail" class="user-form-input" placeholder="gebruiker@vitens.nl">
+                    </div>
+
+                    <div class="user-form-group" style="margin-bottom: 10px;">
+                        <label class="user-form-label" for="userManager">Manager</label>
+                        <input type="text" id="userManager" class="user-form-input" placeholder="Manager">
+                    </div>
+                    <div class="user-form-group" style="margin-bottom: 10px;">
+                        <label class="user-form-label" for="userDepartment">Afdeling</label>
+                        <input type="text" id="userDepartment" class="user-form-input" placeholder="Afdeling">
+                    </div>
+
+                    <div class="user-form-group full-width" style="margin-bottom: 0;">
+                        <label class="user-form-label" for="businessJustification">Zakelijke rechtvaardiging</label>
+                        <textarea
+                            id="businessJustification"
+                            class="user-form-textarea"
+                            placeholder="Geef een gedetailleerde reden..."
+                        ></textarea>
+                    </div>
+                    </div>
                 </div>
 
                 <!-- Winkelwagen sectie (als los blok) -->
@@ -1060,6 +1393,9 @@
             document.getElementById('resultsContainer').innerHTML =
                 '<div class="no-results">Voer een zoekterm in om te beginnen met zoeken</div>';
             document.getElementById('searchInput').value = '';
+
+            // Clear autocomplete
+            hideAutocomplete();
 
             console.log(`Switched to ${mode} mode`);
         }
@@ -1387,56 +1723,64 @@
                 name: "Microsoft Visio Professional",
                 description: "Diagrammen en flowcharts maken",
                 type: "Applicatie",
-                category: "visio"
+                category: "visio",
+                owner: "IT Support Team"
             },
             {
                 id: 2,
                 name: "Microsoft Visio Standard",
                 description: "Basis diagrammen en tekeningen",
                 type: "Applicatie",
-                category: "visio"
+                category: "visio",
+                owner: "IT Support Team"
             },
             {
                 id: 3,
                 name: "SAP_P2P_BUYER",
                 description: "Purchase-to-Pay: Inkoper rechten voor het aanmaken van inkooporders",
                 type: "SAP Rol",
-                category: "p2p"
+                category: "p2p",
+                owner: "Procurement Manager"
             },
             {
                 id: 4,
                 name: "SAP_P2P_APPROVER",
                 description: "Purchase-to-Pay: Goedkeuren van inkooporders en facturen",
                 type: "SAP Rol",
-                category: "p2p"
+                category: "p2p",
+                owner: "Finance Manager"
             },
             {
                 id: 5,
                 name: "SAP_P2P_REQUESTER",
                 description: "Purchase-to-Pay: Aanmaken van inkoopaanvragen",
                 type: "SAP Rol",
-                category: "p2p"
+                category: "p2p",
+                owner: "Procurement Manager"
             },
             {
                 id: 6,
                 name: "SAP_P2P_RECEIVER",
                 description: "Purchase-to-Pay: Goederenontvanst registreren",
                 type: "SAP Rol",
-                category: "p2p"
+                category: "p2p",
+                owner: "Logistics Manager"
             },
             {
                 id: 7,
                 name: "SAP_P2P_VENDOR_MANAGER",
                 description: "Purchase-to-Pay: Leveranciersbeheer en stamgegevens",
                 type: "SAP Rol",
-                category: "p2p"
+                category: "p2p",
+                owner: "Procurement Manager"
             },
             {
                 id: 8,
                 name: "SAP_P2P_INVOICE_PROCESSOR",
                 description: "Purchase-to-Pay: Factuurverwerking en controle",
                 type: "SAP Rol",
-                category: "p2p"
+                category: "p2p",
+                owner: "Finance Manager"
             }
         ];
 
@@ -1518,7 +1862,7 @@
                 const xmlResponse = await callGrcSoapApi('searchRoles', soapBody);
 
                 // Parse response en extract rol informatie
-                // RoleName, RoleDesc, System, RoleType
+                // RoleName, RoleDesc, System, RoleType, RoleOwner
                 const roles = [];
                 const roleNodes = xmlResponse.getElementsByTagName('ROLE');
 
@@ -1529,7 +1873,10 @@
                         name: roleNode.getElementsByTagName('ROLE_NAME')[0]?.textContent,
                         description: roleNode.getElementsByTagName('ROLE_DESC')[0]?.textContent,
                         type: roleNode.getElementsByTagName('ROLE_TYPE')[0]?.textContent,
-                        system: roleNode.getElementsByTagName('SYSTEM')[0]?.textContent
+                        system: roleNode.getElementsByTagName('SYSTEM')[0]?.textContent,
+                        owner: roleNode.getElementsByTagName('ROLE_OWNER')[0]?.textContent ||
+                               roleNode.getElementsByTagName('OWNER')[0]?.textContent ||
+                               'Niet beschikbaar'
                     });
                 }
 
@@ -1610,10 +1957,94 @@
             // Voor nu return placeholder
             return {
                 userId: 'current.user',
+                firstName: 'Huidige',
+                lastName: 'Gebruiker',
                 displayName: 'Huidige Gebruiker',
                 email: 'user@vitens.nl',
-                department: 'IT'
+                department: 'IT',
+                manager: 'Manager Naam'
             };
+        }
+
+        // ============================================
+        // USER INFORMATION MANAGEMENT
+        // ============================================
+
+        /**
+         * Toggle user fields gebaseerd op "Voor mezelf" of "Andere gebruiker"
+         */
+        function toggleUserFields() {
+            const requestFor = document.querySelector('input[name="requestFor"]:checked').value;
+
+            if (requestFor === 'self') {
+                // Vul automatisch in met huidige gebruiker
+                populateCurrentUserInfo();
+                // Disable fields voor eigen aanvraag
+                document.getElementById('userFirstName').disabled = true;
+                document.getElementById('userLastName').disabled = true;
+                document.getElementById('userId').disabled = true;
+                document.getElementById('userEmail').disabled = true;
+            } else {
+                // Enable fields voor andere gebruiker
+                document.getElementById('userFirstName').disabled = false;
+                document.getElementById('userLastName').disabled = false;
+                document.getElementById('userId').disabled = false;
+                document.getElementById('userEmail').disabled = false;
+                // Clear fields
+                clearUserFields();
+            }
+        }
+
+        /**
+         * Vul gebruikersvelden in met huidige gebruiker info
+         */
+        function populateCurrentUserInfo() {
+            const currentUser = getCurrentUser();
+            document.getElementById('userFirstName').value = currentUser.firstName || '';
+            document.getElementById('userLastName').value = currentUser.lastName || '';
+            document.getElementById('userId').value = currentUser.userId || '';
+            document.getElementById('userEmail').value = currentUser.email || '';
+            document.getElementById('userManager').value = currentUser.manager || '';
+            document.getElementById('userDepartment').value = currentUser.department || '';
+        }
+
+        /**
+         * Clear user fields
+         */
+        function clearUserFields() {
+            document.getElementById('userFirstName').value = '';
+            document.getElementById('userLastName').value = '';
+            document.getElementById('userId').value = '';
+            document.getElementById('userEmail').value = '';
+            document.getElementById('userManager').value = '';
+            document.getElementById('userDepartment').value = '';
+        }
+
+        /**
+         * Haal gebruikersinformatie op uit formulier
+         */
+        function getUserInfoFromForm() {
+            return {
+                requestFor: document.querySelector('input[name="requestFor"]:checked').value,
+                firstName: document.getElementById('userFirstName').value.trim(),
+                lastName: document.getElementById('userLastName').value.trim(),
+                userId: document.getElementById('userId').value.trim(),
+                email: document.getElementById('userEmail').value.trim(),
+                manager: document.getElementById('userManager').value.trim(),
+                department: document.getElementById('userDepartment').value.trim(),
+                businessJustification: document.getElementById('businessJustification').value.trim()
+            };
+        }
+
+        /**
+         * Toggle gebruikersinformatie sectie in/uitklappen
+         */
+        function toggleUserInfoSection() {
+            const content = document.getElementById('userInfoContent');
+            const icon = document.querySelector('.collapse-icon');
+
+            content.classList.toggle('collapsed');
+            icon.classList.toggle('collapsed');
         }
 
         // ============================================
@@ -1784,11 +2215,14 @@
 
             resultsContainer.innerHTML = searchResults.map(item => {
                 const isInCart = cart.some(cartItem => cartItem.id === item.id);
+                const ownerInfo = item.owner ? `<div class="role-owner"><span class="role-owner-label">Rol eigenaar:</span> ${item.owner}</div>` : '';
+
                 return `
                     <div class="result-item">
                         <div class="result-info">
                             <div class="result-name">${item.name}</div>
                             <div class="result-description">${item.description}</div>
+                            ${ownerInfo}
                             <span class="result-type">${item.type}</span>
                         </div>
                         <button
@@ -2101,12 +2535,200 @@
         }
 
         // ============================================
+        // AUTOCOMPLETE FUNCTIONALITEIT
+        // ============================================
+
+        let autocompleteResults = [];
+        let selectedAutocompleteIndex = -1;
+        let autocompleteDebounceTimer = null;
+
+        /**
+         * Toon autocomplete suggesties
+         */
+        function showAutocompleteSuggestions(searchTerm) {
+            const dropdown = document.getElementById('autocompleteDropdown');
+
+            if (!searchTerm || searchTerm.trim().length < 2) {
+                hideAutocomplete();
+                return;
+            }
+
+            // Haal data op basis van huidige mode
+            let dataSource = [];
+            switch(currentMode) {
+                case 'demo':
+                    dataSource = localAvailableAccess;
+                    break;
+                case 'excel':
+                    if (excelData.length === 0) {
+                        hideAutocomplete();
+                        return;
+                    }
+                    dataSource = excelData;
+                    break;
+                case 'online':
+                    // Voor online mode: gebruik lokale cache of vorige resultaten
+                    // In productie zou dit async zijn met live GRC data
+                    dataSource = searchResults.length > 0 ? searchResults : localAvailableAccess;
+                    break;
+            }
+
+            // Gebruik fuzzy search voor autocomplete suggesties
+            autocompleteResults = fuzzySearch(searchTerm, dataSource).slice(0, 8); // Max 8 suggesties
+            selectedAutocompleteIndex = -1;
+
+            if (autocompleteResults.length === 0) {
+                dropdown.innerHTML = '<div class="autocomplete-no-results">Geen suggesties gevonden</div>';
+                dropdown.classList.add('active');
+                return;
+            }
+
+            // Render suggesties
+            dropdown.innerHTML = autocompleteResults.map((item, index) => `
+                <div class="autocomplete-item" data-index="${index}" onclick="selectAutocompleteSuggestion(${index})">
+                    <div class="autocomplete-item-name">${highlightMatch(item.name, searchTerm)}</div>
+                    <div class="autocomplete-item-description">${item.description}</div>
+                    <span class="autocomplete-item-type">${item.type}</span>
+                </div>
+            `).join('');
+
+            dropdown.classList.add('active');
+        }
+
+        /**
+         * Highlight matching text in autocomplete suggestie
+         */
+        function highlightMatch(text, searchTerm) {
+            if (!searchTerm) return text;
+
+            const regex = new RegExp(`(${escapeRegex(searchTerm)})`, 'gi');
+            return text.replace(regex, '<strong>$1</strong>');
+        }
+
+        /**
+         * Escape special regex characters
+         */
+        function escapeRegex(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        /**
+         * Verberg autocomplete dropdown
+         */
+        function hideAutocomplete() {
+            const dropdown = document.getElementById('autocompleteDropdown');
+            dropdown.classList.remove('active');
+            autocompleteResults = [];
+            selectedAutocompleteIndex = -1;
+        }
+
+        /**
+         * Selecteer een autocomplete suggestie
+         */
+        function selectAutocompleteSuggestion(index) {
+            if (index >= 0 && index < autocompleteResults.length) {
+                const selectedItem = autocompleteResults[index];
+                document.getElementById('searchInput').value = selectedItem.name;
+                hideAutocomplete();
+
+                // Automatisch zoeken na selectie
+                performSearch();
+            }
+        }
+
+        /**
+         * Navigeer door autocomplete suggesties met toetsenbord
+         */
+        function navigateAutocomplete(direction) {
+            const dropdown = document.getElementById('autocompleteDropdown');
+            if (!dropdown.classList.contains('active') || autocompleteResults.length === 0) return;
+
+            // Remove previous selection
+            const items = dropdown.querySelectorAll('.autocomplete-item');
+            if (selectedAutocompleteIndex >= 0 && selectedAutocompleteIndex < items.length) {
+                items[selectedAutocompleteIndex].classList.remove('selected');
+            }
+
+            // Update index
+            if (direction === 'down') {
+                selectedAutocompleteIndex = (selectedAutocompleteIndex + 1) % autocompleteResults.length;
+            } else if (direction === 'up') {
+                selectedAutocompleteIndex = selectedAutocompleteIndex <= 0 ?
+                    autocompleteResults.length - 1 :
+                    selectedAutocompleteIndex - 1;
+            }
+
+            // Add new selection
+            if (selectedAutocompleteIndex >= 0 && selectedAutocompleteIndex < items.length) {
+                items[selectedAutocompleteIndex].classList.add('selected');
+
+                // Scroll into view if needed
+                items[selectedAutocompleteIndex].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+            }
+        }
+
+        /**
+         * Gebruik geselecteerde autocomplete suggestie
+         */
+        function useSelectedAutocompleteSuggestion() {
+            if (selectedAutocompleteIndex >= 0 && selectedAutocompleteIndex < autocompleteResults.length) {
+                selectAutocompleteSuggestion(selectedAutocompleteIndex);
+                return true;
+            }
+            return false;
+        }
+
+        /**
+         * Handle input in search field met debouncing
+         */
+        function handleSearchInput(event) {
+            const searchTerm = event.target.value.trim();
+
+            // Clear previous timer
+            if (autocompleteDebounceTimer) {
+                clearTimeout(autocompleteDebounceTimer);
+            }
+
+            // Debounce: wait 300ms after user stops typing
+            autocompleteDebounceTimer = setTimeout(() => {
+                showAutocompleteSuggestions(searchTerm);
+            }, 300);
+        }
+
+        // ============================================
         // EVENT LISTENERS
         // ============================================
 
+        // Search input met autocomplete
+        document.getElementById('searchInput').addEventListener('input', handleSearchInput);
+
+        // Keyboard navigation
+        document.getElementById('searchInput').addEventListener('keydown', function(e) {
+            const dropdown = document.getElementById('autocompleteDropdown');
+            const isDropdownActive = dropdown.classList.contains('active');
+
+            if (e.key === 'ArrowDown' && isDropdownActive) {
+                e.preventDefault();
+                navigateAutocomplete('down');
+            } else if (e.key === 'ArrowUp' && isDropdownActive) {
+                e.preventDefault();
+                navigateAutocomplete('up');
+            } else if (e.key === 'Enter') {
+                if (isDropdownActive && useSelectedAutocompleteSuggestion()) {
+                    e.preventDefault();
+                } else {
+                    performSearch();
+                }
+            } else if (e.key === 'Escape') {
+                hideAutocomplete();
+            }
+        });
+
+        // Legacy Enter key support
         document.getElementById('searchInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
-                performSearch();
+                // Handled by keydown listener above
+                e.preventDefault();
             }
         });
 
@@ -2120,6 +2742,16 @@
             }
         });
 
+        // Close autocomplete when clicking outside
+        document.addEventListener('click', function(e) {
+            const searchInput = document.getElementById('searchInput');
+            const autocompleteDropdown = document.getElementById('autocompleteDropdown');
+
+            if (!searchInput.contains(e.target) && !autocompleteDropdown.contains(e.target)) {
+                hideAutocomplete();
+            }
+        });
+
         // Load settings on page load
         window.addEventListener('load', function() {
             document.getElementById('searchInput').focus();
@@ -2130,6 +2762,9 @@
                 const settings = JSON.parse(savedSettings);
                 applySettings(settings);
             }
+
+            // Populate current user info on load
+            populateCurrentUserInfo();
         });
     </script>
 </body>
