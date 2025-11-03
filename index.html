@@ -21,8 +21,8 @@
         .vitens-header {
             background: #2c3c8a;
             color: white;
-            padding: 20px 40px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 25px 40px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
         }
 
         .vitens-logo-section {
@@ -445,10 +445,11 @@
         .autocomplete-item-type {
             display: inline-block;
             padding: 2px 8px;
-            background: #4aaedf;
+            background: #D86018;
             color: white;
             border-radius: 3px;
             font-size: 0.75em;
+            font-weight: 600;
             margin-top: 4px;
         }
 
@@ -548,11 +549,11 @@
         .result-type {
             display: inline-block;
             padding: 4px 12px;
-            background: #4aaedf;
+            background: #D86018;
             color: white;
             border-radius: 3px;
             font-size: 0.85em;
-            font-weight: 500;
+            font-weight: 600;
         }
 
         .add-btn {
@@ -640,8 +641,14 @@
         }
 
         .cart-item-type {
-            font-size: 0.85em;
-            color: #666;
+            display: inline-block;
+            padding: 3px 10px;
+            background: #D86018;
+            color: white;
+            border-radius: 3px;
+            font-size: 0.8em;
+            font-weight: 600;
+            margin-top: 4px;
         }
 
         .remove-btn {
@@ -1685,7 +1692,17 @@
 
             const threshold = 50; // Minimale score om als match te tellen
 
-            // Bereken score voor elk item
+            // Check eerst of er een exacte match is op naam
+            const exactMatch = items.find(item =>
+                item.name.toLowerCase() === searchTerm.toLowerCase()
+            );
+
+            // Als exacte match gevonden, return alleen die match
+            if (exactMatch) {
+                return [exactMatch];
+            }
+
+            // Anders: bereken score voor elk item
             const scoredItems = items.map(item => {
                 // Check scores voor verschillende velden
                 const nameScore = fuzzyMatchScore(searchTerm, item.name);
@@ -2628,11 +2645,13 @@
         function selectAutocompleteSuggestion(index) {
             if (index >= 0 && index < autocompleteResults.length) {
                 const selectedItem = autocompleteResults[index];
+
+                // Vul zoekbalk met geselecteerde naam
                 document.getElementById('searchInput').value = selectedItem.name;
                 hideAutocomplete();
 
-                // Automatisch zoeken na selectie
-                performSearch();
+                // Focus blijft op zoekbalk voor verder typen of Enter
+                document.getElementById('searchInput').focus();
             }
         }
 
